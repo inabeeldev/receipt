@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Notifications\TwoFactorCode;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -65,6 +66,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'login' => 'required',
             'password' => 'required',
+            'remember_me' => 'boolean', // Add a validation rule for remember_me
         ]);
 
         if ($validator->fails()) {
@@ -80,10 +82,21 @@ class AuthController extends Controller
             $credentials = ['username' => $request->input('login'), 'password' => $request->input('password')];
         }
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->input('remember_me'))) {
             // Authentication successful, generate a new access token
             $user = Auth::user();
-            $token = $user->createToken('ReceiptManagement')->plainTextToken;
+            if ($user->two_factor_secret) {
+                // Generate and send OTP
+                $user->generateTwoFactorCode();
+                $user->notify(new TwoFactorCode());
+
+                // Return response for OTP verification
+                return response()->json(['message' => 'Two-factor authentication required']);
+            }
+
+
+            // Use plainTextToken for API authentication
+            $token = $user->createToken('ReceiptManagement', ['*'])->plainTextToken;
 
             // Return the token and user information
             $response = [
@@ -96,6 +109,22 @@ class AuthController extends Controller
             // Authentication failed
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
+    }
+
+
+    public function verifyTwoFactor(Request $request)
+    {
+        $request->validate([
+            'code' => 'required',
+        ]);
+
+        if (!Hash::check($request->code, $request->user()->two_factor_code)) {
+            return response()->json(['error' => 'Invalid two-factor code'], 401);
+        }
+
+        // Your existing token generation logic
+
+        return response()->json($response, 200);
     }
 
 

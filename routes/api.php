@@ -25,5 +25,14 @@ Route::get('/hello', function () {
 Route::prefix('auth')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'registration']);
     Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+    Route::post('/verify-two-factor', [App\Http\Controllers\Api\AuthController::class, 'verifyTwoFactor']);
     Route::post('/forgot-password', [App\Http\Controllers\Api\ForgotPasswordController::class, 'sendResetLinkEmail']);
+    Route::post('/reset-password', [App\Http\Controllers\Api\ForgotPasswordController::class, 'reset']);
+});
+
+Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
+    Route::post('/update-profile', [App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);
+    Route::post('/change-password', [App\Http\Controllers\Api\ProfileController::class, 'changePassword']);
+    Route::post('/enable-two-factor', [App\Http\Controllers\Api\ProfileController::class, 'enableTwoFactor']);
+    Route::post('/disable-two-factor', [App\Http\Controllers\Api\ProfileController::class, 'disableTwoFactor']);
 });
