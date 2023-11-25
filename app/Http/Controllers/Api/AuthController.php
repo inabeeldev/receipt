@@ -21,6 +21,8 @@ class AuthController extends Controller
             'contact' => 'required|unique:users|min:5|max:20',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'address' => 'required',
+            'business_name' => 'required',
+            'business_type' => 'required',
             'number_of_products' => 'required|numeric',
             'password' => 'required|min:8',
         ]);
@@ -43,6 +45,8 @@ class AuthController extends Controller
             'contact' => $request->input('contact'),
             'logo' => $logoPath,
             'address' => $request->input('address'),
+            'business_name' => $request->input('business_name'),
+            'business_type' => $request->input('business_type'),
             'number_of_products' => $request->input('number_of_products'),
             'password' => Hash::make($request->input('password')),
         ]);
@@ -73,32 +77,23 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
-        // Attempt to authenticate the user with either username or email
         if (filter_var($request->input('login'), FILTER_VALIDATE_EMAIL)) {
             // If the input is an email address
             $credentials = ['email' => $request->input('login'), 'password' => $request->input('password')];
         } else {
-            // If the input is a username
             $credentials = ['username' => $request->input('login'), 'password' => $request->input('password')];
         }
 
         if (Auth::attempt($credentials, $request->input('remember_me'))) {
-            // Authentication successful, generate a new access token
             $user = Auth::user();
-            if ($user->two_factor_secret) {
-                // Generate and send OTP
-                $user->generateTwoFactorCode();
-                $user->notify(new TwoFactorCode());
 
-                // Return response for OTP verification
-                return response()->json(['message' => 'Two-factor authentication required']);
+            if ($user->is_two_fa == 1) {
+                auth()->user()->generateCode($user->id);
+                return response()->json(['message' => 'Two-factor authentication is required', 'user_id' => $user->id], 200);
             }
 
-
-            // Use plainTextToken for API authentication
             $token = $user->createToken('ReceiptManagement', ['*'])->plainTextToken;
 
-            // Return the token and user information
             $response = [
                 'token' => $token,
                 'user' => $user,
@@ -106,25 +101,8 @@ class AuthController extends Controller
 
             return response()->json($response, 200);
         } else {
-            // Authentication failed
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
-    }
-
-
-    public function verifyTwoFactor(Request $request)
-    {
-        $request->validate([
-            'code' => 'required',
-        ]);
-
-        if (!Hash::check($request->code, $request->user()->two_factor_code)) {
-            return response()->json(['error' => 'Invalid two-factor code'], 401);
-        }
-
-        // Your existing token generation logic
-
-        return response()->json($response, 200);
     }
 
 
