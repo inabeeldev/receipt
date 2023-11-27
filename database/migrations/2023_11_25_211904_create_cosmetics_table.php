@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('cosmetics', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('order_number');
+            $table->mediumText('product_description');
             $table->timestamps();
         });
     }

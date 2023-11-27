@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('mobile_money_agencies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('transaction_type');
+            $table->string('chosen_product');
+            $table->bigInteger('customer_mobile');
+            $table->decimal('transaction_amount', 10, 2);
+            $table->decimal('withdrawals_fee', 10, 2);
+            $table->bigInteger('wave_transaction');
             $table->timestamps();
         });
     }

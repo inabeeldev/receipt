@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('furniture', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('order_number');
+            $table->mediumText('furniture_description');
+            $table->string('rent_duration');
             $table->timestamps();
         });
     }

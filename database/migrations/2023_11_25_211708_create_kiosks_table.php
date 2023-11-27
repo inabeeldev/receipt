@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('kiosks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->mediumText('purchased_item_description');
             $table->timestamps();
         });
     }

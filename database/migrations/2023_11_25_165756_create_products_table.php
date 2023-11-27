@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('couriers', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->string('customer_name');
-            $table->mediumText('delivery_address');
-            $table->mediumText('order_description');
-            $table->decimal('delivery_fee', 10, 2);
+            $table->foreignId('admin_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('title');
+            $table->mediumText('description');
+            $table->decimal('price', 10, 2);
+            $table->bigInteger('stock_count');
+            $table->string('image');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('couriers');
+        Schema::dropIfExists('products');
     }
 };

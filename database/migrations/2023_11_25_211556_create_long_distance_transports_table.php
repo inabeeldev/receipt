@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('long_distance_transports', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('reservation_number');
+            $table->string('driver_name');
+            $table->string('license_plate_number');
+            $table->string('journey_duration');
+            $table->decimal('ticket_price', 10, 2);
             $table->timestamps();
         });
     }

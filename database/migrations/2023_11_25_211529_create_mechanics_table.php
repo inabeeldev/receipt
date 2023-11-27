@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('mechanics', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('invoice_number');
+            $table->mediumText('repairs_description');
             $table->timestamps();
         });
     }

@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('general_stores', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('transaction_number');
+            $table->mediumText('product_description');
             $table->timestamps();
         });
     }

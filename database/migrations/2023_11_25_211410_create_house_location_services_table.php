@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('house_location_services', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('order_number');
+            $table->string('house_location');
             $table->timestamps();
         });
     }

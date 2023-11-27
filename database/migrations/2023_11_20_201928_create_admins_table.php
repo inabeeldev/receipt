@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('couriers', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->string('customer_name');
-            $table->mediumText('delivery_address');
-            $table->mediumText('order_description');
-            $table->decimal('delivery_fee', 10, 2);
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('contact')->nullable();
+            $table->string('image')->nullable();
+            $table->string('role')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('couriers');
+        Schema::dropIfExists('admins');
     }
 };

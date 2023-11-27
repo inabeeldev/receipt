@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('restaurant_services', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('order_number');
+            $table->string('customer_name');
+            $table->mediumText('order_description');
             $table->timestamps();
         });
     }

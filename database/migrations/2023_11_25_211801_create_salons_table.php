@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('salons', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('reservation_number');
+            $table->string('customer_name');
+            $table->mediumText('service_provided');
+
             $table->timestamps();
         });
     }

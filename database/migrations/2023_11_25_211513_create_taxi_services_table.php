@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('taxi_services', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->string('trip_number');
+            $table->string('driver_name');
+            $table->string('driver_photo');
+            $table->string('distance_travel');
+            $table->string('trip_duration');
             $table->timestamps();
         });
     }

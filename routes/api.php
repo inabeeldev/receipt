@@ -31,6 +31,11 @@ Route::prefix('auth')->group(function () {
     Route::get('2fa/resend/{user_id}', [App\Http\Controllers\Api\TwoFAController::class, 'resend']);
 });
 
+Route::prefix('auth/admin')->group(function () {
+    Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'registration']);
+    Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+});
+
 Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 
     Route::post('/update-profile', [App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);

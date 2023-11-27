@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('catering_services', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('receipt_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->mediumText('service_description');
             $table->timestamps();
         });
     }
