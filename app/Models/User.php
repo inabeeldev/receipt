@@ -4,8 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Exception;
+use App\Models\Message;
 use App\Models\UserCode;
+use App\Models\ChatGroup;
 use App\Mail\SendCodeMail;
+use App\Models\ChatInvitation;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Notifications\Notifiable;
@@ -56,20 +59,27 @@ class User extends Authenticatable
     ];
 
 
-    // public function enableTwoFactorAuthentication()
-    // {
-    //     $this->two_factor_secret = $this->hasEnabledTwoFactorAuthentication();
-    //     $this->save();
 
-    //     return $this->two_factor_secret;
-    // }
+    public function groups()
+    {
+        return $this->belongsToMany(ChatGroup::class, 'user_chat_groups', 'user_id', 'chat_group_id');
+    }
 
-    // public function disableTwoFactorAuthentication()
-    // {
-    //     $this->two_factor_secret = null;
-    //     $this->two_factor_recovery_codes = null;
-    //     $this->save();
-    // }
+    public function ownedGroups()
+    {
+        return $this->hasMany(ChatGroup::class, 'user_id');
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(ChatInvitation::class, 'user_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'user_id');
+    }
+
 
     public function generateCode($user_id)
 

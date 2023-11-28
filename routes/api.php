@@ -32,14 +32,38 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('auth/admin')->group(function () {
-    Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'registration']);
-    Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+    Route::post('/register', [App\Http\Controllers\Api\Admin\AuthController::class, 'adminRegistration']);
+    Route::post('/login', [App\Http\Controllers\Api\Admin\AuthController::class, 'login']);
+});
+
+Route::prefix('admin')->middleware('admin_auth')->group(function () {
+    Route::put('/profile/edit', [App\Http\Controllers\Api\Admin\AuthController::class, 'editAdminProfile']);
+    Route::delete('/delete', [App\Http\Controllers\Api\Admin\AuthController::class, 'deleteAdmin']);
+
+    Route::prefix('product')->group(function () {
+        Route::get('/list', [App\Http\Controllers\Api\Admin\ProductController::class, 'list']);
+        Route::get('/show/{id}', [App\Http\Controllers\Api\Admin\ProductController::class, 'show']);
+        Route::post('/store', [App\Http\Controllers\Api\Admin\ProductController::class, 'store']);
+        Route::put('/update/{id}', [App\Http\Controllers\Api\Admin\ProductController::class, 'update']);
+        Route::delete('/delete/{id}', [App\Http\Controllers\Api\Admin\ProductController::class, 'destroy']);
+    });
+
 });
 
 Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
-
     Route::post('/update-profile', [App\Http\Controllers\Api\ProfileController::class, 'updateProfile']);
     Route::post('/change-password', [App\Http\Controllers\Api\ProfileController::class, 'changePassword']);
     Route::post('/enable-two-factor', [App\Http\Controllers\Api\TwoFAController::class, 'enableTwoFactorAuth']);
     Route::post('/disable-two-factor', [App\Http\Controllers\Api\TwoFAController::class, 'disableTwoFactorAuth']);
+
+});
+
+Route::prefix('company')->middleware('auth:sanctum')->group(function () {
+    Route::post('/chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'create']);
+    Route::get('/chat-groups/{group}', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'show']);
+    Route::post('/chat-groups/{group}/invitations', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'send']);
+    Route::put('/chat-invitations/{invitation}/accept', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'accept']);
+    Route::get('/chat-invitations/{invitation}', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'show']);
+    Route::post('/chat-groups/{group}/messages', [App\Http\Controllers\Api\Chat\ChatMessageController::class, 'send']);
+    Route::get('/chat-groups/{group}/get_messages', [App\Http\Controllers\Api\Chat\ChatMessageController::class, 'show']);
 });

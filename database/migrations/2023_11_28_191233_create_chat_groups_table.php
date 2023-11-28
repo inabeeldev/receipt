@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('chat_groups', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('contact')->nullable();
-            $table->string('image')->nullable();
-            $table->string('role')->nullable();
-            $table->string('password');
-            $table->string('auth_token')->nullable();
-            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('chat_groups');
     }
 };
