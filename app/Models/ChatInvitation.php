@@ -14,6 +14,7 @@ class ChatInvitation extends Model
         'chat_group_id',
         'user_id',
         'accepted',
+        'group_owner_id',
     ];
 
     public function group()
@@ -24,6 +25,11 @@ class ChatInvitation extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function groupOwner()
+    {
+        return $this->belongsTo(User::class, 'group_owner_id');
     }
 
 }

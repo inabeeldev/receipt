@@ -43,6 +43,7 @@ class ChatInvitationController extends Controller
             'chat_group_id' => $group->id,
             'user_id' => $userToInvite->id,
             'accepted' => false,
+            'group_owner_id' => $group->user_id,
         ]);
 
         return response()->json(['invitation' => $invitation], 201);

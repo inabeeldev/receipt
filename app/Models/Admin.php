@@ -22,4 +22,11 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+
+    public function sentMessages()
+    {
+        return $this->hasMany(AdminMessage::class, 'admin_id', 'id');
+    }
+
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('chat_invitations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('chat_group_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_owner_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('accepted')->default(false);
 

@@ -22,6 +22,12 @@ Route::get('/hello', function () {
     return response()->json(['message' => 'Hello, World!']);
 });
 
+Route::post('/admin-send-user', [App\Http\Controllers\Api\Admin\ChatController::class, 'adminMessage'])->middleware('admin_auth');
+Route::post('/user-send-admin', [App\Http\Controllers\Api\Admin\ChatController::class, 'userMessage'])->middleware('auth:sanctum');
+Route::get('/admin-messages', [App\Http\Controllers\Api\Admin\ChatController::class, 'getAdminMessages'])->middleware('admin_auth');
+Route::get('/user-messages', [App\Http\Controllers\Api\Admin\ChatController::class, 'getUserMessages'])->middleware('auth:sanctum');
+
+
 Route::prefix('auth')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'registration']);
     Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);

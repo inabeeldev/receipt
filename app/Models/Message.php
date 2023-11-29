@@ -10,6 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Message extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'chat_group_id',
+        'user_id',
+        'message',
+    ];
 
 
     public function group()

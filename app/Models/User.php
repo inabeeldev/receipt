@@ -80,6 +80,13 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'user_id');
     }
 
+    // for admin messages
+    public function sentMessages()
+    {
+        return $this->hasMany(AdminMessage::class, 'user_id', 'id');
+    }
+
+
 
     public function generateCode($user_id)
 
