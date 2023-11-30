@@ -64,6 +64,13 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::prefix('receipt')->middleware('auth:sanctum')->group(function () {
+    Route::post('/generate-receipt', [App\Http\Controllers\Api\ReceiptController::class, 'generateReceipt']);
+    Route::get('/show-receipts', [App\Http\Controllers\Api\ReceiptController::class, 'showReceipts']);
+    Route::get('/get-receipt/{receiptId}', [App\Http\Controllers\Api\ReceiptController::class, 'getReceipt']);
+
+});
+
 Route::prefix('company')->middleware('auth:sanctum')->group(function () {
     Route::post('/chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'create']);
     Route::get('/chat-groups/{group}', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'show']);

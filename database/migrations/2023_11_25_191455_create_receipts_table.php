@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('receipt_number');
+            $table->decimal('total_price', 10, 2);
+            $table->decimal('total_tax', 10, 2);
             $table->string('payment_method');
-            $table->decimal('product_amount', 10, 2);
             $table->mediumText('message');
-
+            $table->boolean('is_issued')->default(true);
             $table->timestamps();
         });
     }

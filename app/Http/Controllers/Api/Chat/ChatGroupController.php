@@ -20,9 +20,18 @@ class ChatGroupController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+        $imagePath = null;
+
+        if (!empty($request->file('image'))) {
+            $imagePath = $request->file('image')->store('group/image');
+            $imagePath = str_replace('group/', '', $imagePath);
+        }
+
         $user = $request->user(); // Assuming you're using authentication
         $group = $user->ownedGroups()->create([
             'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'image' => $imagePath,
         ]);
 
         return response()->json(['group' => $group], 201);
@@ -30,9 +39,26 @@ class ChatGroupController extends Controller
 
     public function show(ChatGroup $group)
     {
-        // Load the users and messages related to the group
-        $group->load('users', 'messages');
+        // Load the owner, messages, and accepted invitations related to the group
+        $group->load(['owner', 'messages', 'invitations' => function ($query) {
+            $query->where('accepted', true);
+        }]);
 
-        return response()->json(['group' => $group]);
+        // Get the count of users in the group with accepted invitations
+        $userCount = $group->invitations->count();
+        if ($group->owner) {
+            $userCount++;
+        }
+
+        // Append the 'no_of_participant' attribute to the $group object
+        $group->no_of_participant = $userCount;
+
+        // Prepare the response data
+        $responseData = [
+            'group' => $group
+        ];
+
+        return response()->json($responseData);
     }
+
 }

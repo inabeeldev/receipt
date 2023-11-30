@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Exception;
 use App\Models\Message;
+use App\Models\Receipt;
 use App\Models\UserCode;
 use App\Models\ChatGroup;
 use App\Mail\SendCodeMail;
@@ -84,6 +85,11 @@ class User extends Authenticatable
     public function sentMessages()
     {
         return $this->hasMany(AdminMessage::class, 'user_id', 'id');
+    }
+
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class, 'user_id');
     }
 
 
