@@ -51,6 +51,32 @@ class ChatInvitationController extends Controller
 
     public function accept(ChatInvitation $invitation)
     {
+        // Update the 'accepted' field to true
+        $invitation->update(['accepted' => true]);
+
+        // Get the user associated with the invitation
+        $user = $invitation->user;
+
+        // Get the chat group associated with the invitation
+        $chatGroup = $invitation->group;
+        // dd($chatGroup);
+
+        // Check if the user is already a member of the group
+        if (!$chatGroup->users->contains($user)) {
+            // Add the user to the chat group
+            $chatGroup->users()->attach($user->id);
+
+            // Perform any additional actions if needed
+
+            return response()->json(['message' => 'Invitation accepted and user added to the chat group successfully.']);
+        }
+
+        // If the user is already a member, you might want to handle this case differently
+        return response()->json(['message' => 'Invitation accepted, but the user is already a member of the chat group.']);
+    }
+
+    public function delete(ChatInvitation $invitation)
+    {
         $invitation->update(['accepted' => true]);
 
         // Perform any additional actions if needed

@@ -22,6 +22,8 @@ use App\Models\RestaurantService;
 use App\Http\Controllers\Controller;
 use App\Models\HouseLocationService;
 use App\Models\LongDistanceTransport;
+use Illuminate\Support\Facades\Validator;
+use App\Notifications\ReceiptNotification;
 
 class ReceiptController extends Controller
 {
@@ -37,6 +39,34 @@ class ReceiptController extends Controller
 
         return response()->json(['receipts' => $receipts]);
     }
+
+    public function depositTransaction()
+    {
+        $user = auth()->user();
+
+        // Retrieve all receipts with operation_type 'deposit' for the authenticated user with related data
+        $receipts = $user->receipts()
+            ->with('receiptProducts', 'detailable') // Eager load related models
+            ->where('operation_type', 'deposit')
+            ->get();
+
+        return response()->json(['deposit_transactions' => $receipts]);
+    }
+
+    public function withdrawTransaction()
+    {
+        $user = auth()->user();
+
+        // Retrieve all receipts with operation_type 'deposit' for the authenticated user with related data
+        $receipts = $user->receipts()
+            ->with('receiptProducts', 'detailable') // Eager load related models
+            ->where('operation_type', 'withdraw')
+            ->get();
+
+        return response()->json(['withdraw_transactions' => $receipts]);
+    }
+
+
 
     public function getReceipt($receiptId)
     {
@@ -54,9 +84,65 @@ class ReceiptController extends Controller
         }
     }
 
+    public function getInvoice($receiptId)
+    {
+        $user = auth()->user();
+
+        // Retrieve the specific receipt for the authenticated user with related data
+        $receipt = $user->receipts()
+            ->with('receiptProducts', 'detailable') // Eager load related models
+            ->find($receiptId);
+
+        if ($receipt) {
+            // Update the is_issued column to false
+            $receipt->update(['is_issued' => true]);
+
+            // Retrieve the updated receipt with related data
+            $updatedReceipt = Receipt::with('receiptProducts', 'detailable')
+                ->find($receiptId);
+
+            return response()->json(['invoice' => $updatedReceipt]);
+        } else {
+            return response()->json(['message' => 'invoice not found.'], 404);
+        }
+    }
+
+    public function sendReceipt($receiptId)
+    {
+        $user = auth()->user();
+
+        // Retrieve the specific receipt for the authenticated user with related data
+        $receipt = $user->receipts()
+            ->with('receiptProducts', 'detailable') // Eager load related models
+            ->find($receiptId);
+
+        if ($receipt) {
+            // Send the receipt information to the user's email
+            $user->notify(new ReceiptNotification($receipt));
+
+            return response()->json(['message' => 'Receipt sent to user email.']);
+        } else {
+            return response()->json(['message' => 'Receipt not found.'], 404);
+        }
+    }
+
 
     public function generateReceipt(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'product_ids' => 'required|array',
+            'product_ids.*' => 'exists:products,id', // Assuming 'products' is the table name
+            'quantities' => 'required|array',
+            'quantities.*' => 'integer|min:1',
+            'payment_method' => 'required|string',
+            'operation_type' => 'required|in:deposit,withdraw',
+            'message' => 'nullable|string',
+        ]);
+
+        // If validation fails, return the errors
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
         // Assuming you receive product_ids and quantities in the request
         $productIds = $request->input('product_ids');
         $quantities = $request->input('quantities');
@@ -70,6 +156,7 @@ class ReceiptController extends Controller
         $receipt->total_price = 0;
         $receipt->total_tax = 0;
         $receipt->payment_method = $request->input('payment_method');
+        $receipt->operation_type = $request->input('operation_type');
         $receipt->message = $request->input('message');
         $receipt->save();
 

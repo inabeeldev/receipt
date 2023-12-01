@@ -34,21 +34,19 @@ class ChatGroupController extends Controller
             'image' => $imagePath,
         ]);
 
+        $group->users()->attach($request->user()->id);
+
         return response()->json(['group' => $group], 201);
     }
 
     public function show(ChatGroup $group)
     {
         // Load the owner, messages, and accepted invitations related to the group
-        $group->load(['owner', 'messages', 'invitations' => function ($query) {
-            $query->where('accepted', true);
-        }]);
+        $group->load(['owner','users','invitations','messages']);
 
         // Get the count of users in the group with accepted invitations
-        $userCount = $group->invitations->count();
-        if ($group->owner) {
-            $userCount++;
-        }
+        $userCount = $group->users->count();
+
 
         // Append the 'no_of_participant' attribute to the $group object
         $group->no_of_participant = $userCount;
@@ -60,5 +58,28 @@ class ChatGroupController extends Controller
 
         return response()->json($responseData);
     }
+
+    public function leaveGroup(Request $request, ChatGroup $group)
+    {
+        // Check if the user is a member of the group
+        if (!$group->users->contains($request->user())) {
+            return response()->json(['error' => 'You are not a member of this group.'], 403);
+        }
+
+        // Check if the user is the owner of the group
+        if ($request->user()->id === $group->user_id) {
+            return response()->json(['error' => 'Group owner cannot leave the group.'], 403);
+        }
+
+        // Remove the user from the group
+        $group->users()->detach($request->user()->id);
+
+        // Delete the corresponding invitation (assuming a user can have multiple invitations)
+        $group->invitations()->where('user_id', $request->user()->id)->delete();
+
+        return response()->json(['message' => 'You have left the group successfully.']);
+    }
+
+
 
 }

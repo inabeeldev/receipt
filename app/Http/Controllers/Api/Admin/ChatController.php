@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Models\User;
 use App\Models\Admin;
 use App\Models\AdminChat;
 use App\Models\AdminMessage;
@@ -98,6 +99,87 @@ class ChatController extends Controller
 
         return response()->json(['messages' => $messages], 200);
     }
+
+    public function getUsersInAdminMessages(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $admin = Admin::where(['auth_token' => $request['token']])->first();
+
+        if (!$admin) {
+            return response()->json([
+                'errors' => [
+                    ['code' => 'admin', 'message' => translate('Invalid token!')]
+                ]
+            ], 401);
+        }
+        // Assuming you have a model for the AdminMessage
+        $users = AdminMessage::distinct('user_id')->pluck('user_id');
+
+        // If you want to get user details, assuming you have a User model
+        $userDetails = User::whereIn('id', $users)->get();
+
+        return response()->json(['users' => $userDetails], 200);
+    }
+
+    public function adminUserMessages(Request $request, $userId)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $admin = Admin::where(['auth_token' => $request['token']])->first();
+
+        if (!$admin) {
+            return response()->json([
+                'errors' => [
+                    ['code' => 'admin', 'message' => translate('Invalid token!')]
+                ]
+            ], 401);
+        }
+
+        // Assuming you have a model for the AdminMessage
+        $userMessages = AdminMessage::where('user_id', $userId)->get();
+
+        return response()->json(['messages' => $userMessages], 200);
+    }
+
+
+    public function userAdminMessages(Request $request)
+    {
+
+
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'errors' => [
+                    ['code' => 'user', 'message' => translate('Unauthenticated!')]
+                ]
+            ], 401);
+        }
+
+        // Assuming you have a model for the AdminMessage
+        $userMessages = AdminMessage::where('user_id', $user->id)->get();
+
+        return response()->json(['messages' => $userMessages], 200);
+    }
+
+
 
 
 }

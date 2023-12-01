@@ -26,6 +26,9 @@ Route::post('/admin-send-user', [App\Http\Controllers\Api\Admin\ChatController::
 Route::post('/user-send-admin', [App\Http\Controllers\Api\Admin\ChatController::class, 'userMessage'])->middleware('auth:sanctum');
 Route::get('/admin-messages', [App\Http\Controllers\Api\Admin\ChatController::class, 'getAdminMessages'])->middleware('admin_auth');
 Route::get('/user-messages', [App\Http\Controllers\Api\Admin\ChatController::class, 'getUserMessages'])->middleware('auth:sanctum');
+Route::get('/get-chat-users', [App\Http\Controllers\Api\Admin\ChatController::class, 'getUsersInAdminMessages'])->middleware('admin_auth');
+Route::get('/user-messages/{userId}', [App\Http\Controllers\Api\Admin\ChatController::class, 'adminUserMessages'])->middleware('admin_auth');
+Route::get('/user-messages-to-admin', [App\Http\Controllers\Api\Admin\ChatController::class, 'userAdminMessages'])->middleware('auth:sanctum');
 
 
 Route::prefix('auth')->group(function () {
@@ -68,12 +71,17 @@ Route::prefix('receipt')->middleware('auth:sanctum')->group(function () {
     Route::post('/generate-receipt', [App\Http\Controllers\Api\ReceiptController::class, 'generateReceipt']);
     Route::get('/show-receipts', [App\Http\Controllers\Api\ReceiptController::class, 'showReceipts']);
     Route::get('/get-receipt/{receiptId}', [App\Http\Controllers\Api\ReceiptController::class, 'getReceipt']);
+    Route::get('/get-invoice/{receiptId}', [App\Http\Controllers\Api\ReceiptController::class, 'getInvoice']);
+    Route::get('/send-receipt/{receiptId}', [App\Http\Controllers\Api\ReceiptController::class, 'sendReceipt']);
+    Route::get('/deposit-transactions', [App\Http\Controllers\Api\ReceiptController::class, 'depositTransaction']);
+    Route::get('/withdraw-transactions', [App\Http\Controllers\Api\ReceiptController::class, 'withdrawTransaction']);
 
 });
 
 Route::prefix('company')->middleware('auth:sanctum')->group(function () {
     Route::post('/chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'create']);
     Route::get('/chat-groups/{group}', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'show']);
+    Route::delete('/groups/{group}/leave', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'leaveGroup']);
     Route::post('/chat-groups/{group}/invitations', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'send']);
     Route::put('/chat-invitations/{invitation}/accept', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'accept']);
     Route::get('/chat-invitations/{invitation}', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'show']);
