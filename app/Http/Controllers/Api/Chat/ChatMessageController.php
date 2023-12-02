@@ -13,32 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ChatMessageController extends Controller
 {
-    // public function send(Request $request, ChatGroup $group)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'message' => 'required|string',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['error' => $validator->errors()], 400);
-    //     }
-
-
-    //     $user = $request->user();
-    //     if (!$group->users->contains($user)) {
-    //         return response()->json(['error' => 'You are not a member of this group.'], 403);
-    //     }
-
-    //     // Continue with sending the message
-    //     $message = Message::create([
-    //         'chat_group_id' => $group->id,
-    //         'user_id' => $user->id,
-    //         'message' => $request->input('message'),
-    //     ]);
-
-    //     return response()->json(['message' => $message], 201);
-    // }
-
 
     public function send(Request $request, ChatGroup $group)
     {

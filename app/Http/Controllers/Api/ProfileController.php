@@ -82,20 +82,6 @@ class ProfileController extends Controller
     }
 
 
-    public function enableTwoFactor(Request $request)
-    {
-        $user = $request->user();
-        $secret = $user->enableTwoFactorAuthentication();
-
-        return response()->json(['secret' => $secret], 200);
-    }
-
-    public function disableTwoFactor(Request $request)
-    {
-        $request->user()->disableTwoFactorAuthentication();
-
-        return response()->json(['message' => 'Two-factor authentication disabled'], 200);
-    }
 
 
 }

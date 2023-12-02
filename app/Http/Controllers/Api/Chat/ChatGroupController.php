@@ -80,6 +80,4 @@ class ChatGroupController extends Controller
         return response()->json(['message' => 'You have left the group successfully.']);
     }
 
-
-
 }
