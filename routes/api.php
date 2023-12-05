@@ -57,6 +57,14 @@ Route::prefix('admin')->middleware('admin_auth')->group(function () {
         Route::delete('/delete/{id}', [App\Http\Controllers\Api\Admin\ProductController::class, 'destroy']);
     });
 
+    Route::prefix('company')->group(function () {
+        Route::post('/register', [App\Http\Controllers\Api\Admin\CompanyController::class, 'registration']);
+        Route::get('/list', [App\Http\Controllers\Api\Admin\CompanyController::class, 'list']);
+        Route::post('/update-profile/{userId}', [App\Http\Controllers\Api\Admin\CompanyController::class, 'updateProfile']);
+        Route::post('/change-password/{userId}', [App\Http\Controllers\Api\Admin\CompanyController::class, 'changePassword']);
+        Route::delete('/delete-company/{userId}', [App\Http\Controllers\Api\Admin\CompanyController::class, 'destroy']);
+    });
+
 });
 
 Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
