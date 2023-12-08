@@ -90,6 +90,7 @@ Route::prefix('company')->middleware('auth:sanctum')->group(function () {
     Route::post('/chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'create']);
     Route::get('/chat-groups/{group}', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'show']);
     Route::delete('/groups/{group}/leave', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'leaveGroup']);
+    Route::get('get-all-companies', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'getUsers']);
     Route::post('/chat-groups/{group}/invitations', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'send']);
     Route::put('/chat-invitations/{invitation}/accept', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'accept']);
     Route::get('/chat-invitations/{invitation}', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'show']);

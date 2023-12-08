@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Validator;
 
 class ChatInvitationController extends Controller
 {
+    public function getUsers()
+    {
+        $users = User::all();
+        return response()->json(['users' => $users], 201);
+    }
+
     public function send(Request $request, ChatGroup $group)
     {
 

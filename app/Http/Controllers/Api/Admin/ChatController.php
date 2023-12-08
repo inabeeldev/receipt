@@ -69,6 +69,14 @@ class ChatController extends Controller
 
     public function getAdminMessages(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
         $admin = Admin::where(['auth_token' => $request['token']])->first();
 
         if (!$admin) {
