@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -18,13 +20,37 @@ class ForgotPasswordController extends Controller
         );
 
         if ($response == Password::RESET_LINK_SENT) {
-            return response()->json(['message' => 'Password reset link sent to your email'], 200);
+            // Generate the reset link using the email and token
+            $resetLink = $this->generateResetLink($request->email);
+
+            // Include the reset link in the response
+            return response()->json([
+                'message' => 'Password reset link sent to your email',
+                'reset_link' => $resetLink,
+            ], 200);
         }
 
         throw ValidationException::withMessages([
             'email' => [trans($response)],
         ]);
     }
+
+    protected function generateResetLink($email)
+{
+    // Retrieve the user instance by email
+    $user = User::where('email', $email)->first();
+
+    if (!$user) {
+        // Handle the case where the user is not found (perhaps show an error)
+        return null;
+    }
+
+    // Use the URL class to generate the reset link
+    $token = app('auth.password.broker')->createToken($user);
+    $resetLink = URL::to('/password/reset/' . $token) . '?email=' . urlencode($email);
+
+    return $resetLink;
+}
 
     protected function broker()
     {
