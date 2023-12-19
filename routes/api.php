@@ -76,6 +76,7 @@ Route::prefix('auth')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('receipt')->middleware('auth:sanctum')->group(function () {
+    Route::get('/show-products', [App\Http\Controllers\Api\ReceiptController::class, 'showProducts']);
     Route::post('/generate-receipt', [App\Http\Controllers\Api\ReceiptController::class, 'generateReceipt']);
     Route::get('/show-receipts', [App\Http\Controllers\Api\ReceiptController::class, 'showReceipts']);
     Route::get('/get-receipt/{receiptId}', [App\Http\Controllers\Api\ReceiptController::class, 'getReceipt']);

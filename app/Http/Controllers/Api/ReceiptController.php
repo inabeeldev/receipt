@@ -27,6 +27,13 @@ use App\Notifications\ReceiptNotification;
 
 class ReceiptController extends Controller
 {
+    public function showProducts()
+    {
+        $user = auth()->user();
+
+        $products = Product::where('business_type', $user->business_type)->get();
+        return response()->json(['products' => $products], 200);
+    }
 
     public function showReceipts()
     {
