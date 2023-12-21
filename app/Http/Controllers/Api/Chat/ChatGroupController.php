@@ -80,4 +80,32 @@ class ChatGroupController extends Controller
         return response()->json(['message' => 'You have left the group successfully.']);
     }
 
+
+    public function getUserGroups(Request $request)
+    {
+        // Get the logged-in user
+        $user = $request->user();
+
+        // Load the groups owned by the user and the groups the user is a member of
+        $ownedGroups = $user->ownedGroups()->with('users')->get();
+        $memberGroups = $user->groups()->with('users')->get();
+
+        // Append the 'no_of_participant' attribute to each group
+        $ownedGroups->each(function ($group) {
+            $group->no_of_participant = $group->users->count();
+        });
+
+        $memberGroups->each(function ($group) {
+            $group->no_of_participant = $group->users->count();
+        });
+
+        // Prepare the response data
+        $responseData = [
+            'owned_groups' => $ownedGroups,
+            'member_groups' => $memberGroups,
+        ];
+
+        return response()->json($responseData);
+    }
+
 }

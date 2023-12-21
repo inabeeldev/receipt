@@ -89,6 +89,7 @@ Route::prefix('receipt')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('company')->middleware('auth:sanctum')->group(function () {
     Route::post('/chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'create']);
+    Route::get('/user-chat-groups', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'getUserGroups']);
     Route::get('/chat-groups/{group}', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'show']);
     Route::delete('/groups/{group}/leave', [App\Http\Controllers\Api\Chat\ChatGroupController::class, 'leaveGroup']);
     Route::get('get-all-companies', [App\Http\Controllers\Api\Chat\ChatInvitationController::class, 'getUsers']);
