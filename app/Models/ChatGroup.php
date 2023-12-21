@@ -12,7 +12,7 @@ class ChatGroup extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','user_id'];
+    protected $fillable = ['name','user_id','description','image'];
 
     public function users()
     {
